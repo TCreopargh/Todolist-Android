@@ -9,18 +9,22 @@
   tools:context=".MainActivity"
   tools:showIn="@layout/app_bar_main">
 
-  <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
-    android:id="@+id/todoList"
+  <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="0dp"
+    android:id="@+id/swipeRefreshLayout"
     android:layout_marginBottom="0dp"
     android:layout_marginStart="0dp"
-    android:layout_marginEnd="0dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"/>
-
+    android:layout_marginEnd="0dp">
+    <com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView
+      android:id="@+id/todoList"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"/>
+  </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

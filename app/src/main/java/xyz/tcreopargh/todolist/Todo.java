@@ -1,10 +1,11 @@
 package xyz.tcreopargh.todolist;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class Todo {
+public class Todo implements Serializable {
 
     private Calendar notificationTime;
     private Calendar startTime;

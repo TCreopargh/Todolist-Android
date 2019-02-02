@@ -27,4 +27,8 @@
   <string name="not_set">未设置</string>
   <string name="input_content">输入内容</string>
   <string name="new_item">添加项目</string>
+  <string name="edit_todo">修改待办事项</string>
+  <string name="new_todo">新建待办事项</string>
+  <string name="deleted">已删除</string>
+  <string name="undo">撤销</string>
 </resources>

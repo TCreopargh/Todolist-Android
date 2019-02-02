@@ -15,6 +15,9 @@ import cn.refactor.library.SmoothCheckBox;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * @author TCreopargh
+ */
 public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHolder> implements OnClickListener {
 
     private List<Todo> todoList;
@@ -69,11 +72,10 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 CheckBox checkBox = view.findViewById(R.id.subCompleted);
                 checkBox.setText(subItem.getTitle());
                 checkBox.setChecked(subItem.isCompleted());
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> subItem.setCompleted(isChecked));
                 holder.subItemsLayout.addView(view);
             }
         }
-        holder.clickableBg
-            .setOnClickListener(v -> holder.completeBox.setChecked(!holder.completeBox.isChecked(), true));
     }
 
     @Override
@@ -94,6 +96,11 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
 
     public static interface OnItemClickListener {
 
+        /**
+         *
+         * @param view The Clicked View
+         * @param position Position of view item
+         */
         void onItemClick(View view, int position);
     }
 
