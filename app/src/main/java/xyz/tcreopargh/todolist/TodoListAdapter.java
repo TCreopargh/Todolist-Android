@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,6 +25,9 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     private List<Todo> todoList;
     private OnItemClickListener onItemClickListener = null;
     private Context context;
+    private SmoothCheckBox.OnCheckedChangeListener onCheckboxClickListener = null;
+    private CompoundButton.OnCheckedChangeListener onSubItemCheckboxClickListener = null;
+    private OnItemClickListener onMajorClickListener = null;
 
     public TodoListAdapter(List<Todo> todoList, Context context) {
         this.todoList = todoList;
@@ -62,7 +67,17 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             holder.alarmTime.setText(intervalText);
         }
         holder.completeBox.setChecked(todo.isCompleted());
-        holder.completeBox.setOnCheckedChangeListener((checkBox, isChecked) -> todo.setCompleted(isChecked));
+        holder.completeBox.setOnCheckedChangeListener((checkBox, isChecked) -> {
+            todo.setCompleted(isChecked);
+            if (onCheckboxClickListener != null) {
+                onCheckboxClickListener.onCheckedChanged(holder.completeBox, isChecked);
+            }
+        });
+        holder.clickableBg.setOnClickListener(v -> {
+            if (onMajorClickListener != null) {
+                onMajorClickListener.onItemClick(v, position);
+            }
+        });
         List<SubItem> subItems = todo.getSubItems();
         holder.subItemsLayout.removeAllViews();
         if (subItems != null && subItems.size() > 0) {
@@ -72,10 +87,20 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
                 CheckBox checkBox = view.findViewById(R.id.subCompleted);
                 checkBox.setText(subItem.getTitle());
                 checkBox.setChecked(subItem.isCompleted());
-                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> subItem.setCompleted(isChecked));
+                checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                    subItem.setCompleted(isChecked);
+                    if (onSubItemCheckboxClickListener != null) {
+                        onSubItemCheckboxClickListener.onCheckedChanged(checkBox, isChecked);
+                    }
+                });
                 holder.subItemsLayout.addView(view);
+
             }
         }
+    }
+
+    public void setOnCheckboxClickListener(SmoothCheckBox.OnCheckedChangeListener listener) {
+        this.onCheckboxClickListener = listener;
     }
 
     @Override
@@ -94,13 +119,35 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         }
     }
 
-    public static interface OnItemClickListener {
+    public void setOnSubItemCheckboxClickListener(OnCheckedChangeListener listener) {
+        this.onSubItemCheckboxClickListener = listener;
+    }
+
+    public void setOnMajorClickListener(OnItemClickListener listener) {
+        this.onMajorClickListener = listener;
+    }
+
+    public interface OnCheckboxClickListener {
+
+        void onCheckedChange(View buttonView, boolean isChecked);
+    }
+
+    public interface OnItemClickListener {
 
         /**
-         *
          * @param view The Clicked View
          * @param position Position of view item
          */
+        void onItemClick(View view, int position);
+    }
+
+    public interface OnSubItemCheckboxClickListener {
+
+        void onCheckedChange(View buttonView, boolean isChecked);
+    }
+
+    public interface OnMajorClickListener {
+
         void onItemClick(View view, int position);
     }
 
