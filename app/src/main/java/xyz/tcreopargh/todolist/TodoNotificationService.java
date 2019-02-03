@@ -69,7 +69,7 @@ public class TodoNotificationService extends Service {
             .setContentText(name).setPriority(PRIORITY_LOW)
             .setCategory(Notification.CATEGORY_REMINDER)
             .setWhen(when.getTimeInMillis())
-            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setSmallIcon(R.drawable.ic_notification)
             .setAutoCancel(true)
             .build();
 
