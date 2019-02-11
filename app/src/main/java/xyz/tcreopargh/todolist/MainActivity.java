@@ -3,7 +3,6 @@ package xyz.tcreopargh.todolist;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import android.annotation.SuppressLint;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -141,12 +140,13 @@ public final class MainActivity extends AppCompatActivity
     setSupportActionBar(toolbar);
 
     swipeRefreshLayout.setOnRefreshListener(
-        () -> new Thread(
-                () -> {
-                  loadTodoList();
-                  swipeRefreshLayout.setRefreshing(false);
-                })
-            .run());
+        () ->
+            new Thread(
+                    () -> {
+                      loadTodoList();
+                      swipeRefreshLayout.setRefreshing(false);
+                    })
+                .run());
 
     Intent intent = new Intent(this, TodoNotificationService.class);
     startService(intent);
@@ -461,10 +461,12 @@ public final class MainActivity extends AppCompatActivity
               String[] strings = tagGroup.getTags();
               List<SubItem> finalList = new ArrayList<>();
               for (String string : strings) {
-                finalList.add(new SubItem(string));
+                SubItem subItem = new SubItem(string);
+                finalList.add(subItem);
               }
               todo.setSubItems(finalList);
               // Todo
+              todo.setCompleted(currentTodo.isCompleted());
               todoList.set(position, todo);
               Collections.sort(todoList, MainActivity::sort);
               saveTodoList();
