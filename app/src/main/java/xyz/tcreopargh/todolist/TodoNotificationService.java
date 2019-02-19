@@ -34,11 +34,12 @@ public class TodoNotificationService extends Service {
     public void onCreate() {
         super.onCreate();
         int requestCode = 1;
-        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, TodoNotificationService.class);
-        startService(intent);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
-        Calendar now = Calendar.getInstance();
+        for (Todo todo : todoList) {
+            AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(), 0);
+            manager
+                .set(AlarmManager.RTC_WAKEUP, todoList.get(0).getNotificationTime().getTimeInMillis(), pendingIntent);
+        }
         for (int i = 0; i < todoList.size(); i++) {
             Todo todo = todoList.get(i);
             if (todo.getNotificationTime() != null) {
