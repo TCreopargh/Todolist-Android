@@ -11,6 +11,10 @@ import java.util.Calendar;
  */
 public class CustomDate {
 
+    public static final int MILLIS_IN_MINUTE = 60 * 1000;
+    public static final int MILLIS_IN_HOUR = 60 * 60 * 1000;
+    public static final int MILLIS_IN_DAY = 24 * 60 * 60 * 1000;
+    public static final int MILLIS_IN_SECOND = 1000;
     private int year;
     private int month;
     private int day;
@@ -20,6 +24,7 @@ public class CustomDate {
         this.month = month;
         this.day = day;
     }
+
     public static String getDateString(Calendar time, Context context) {
         boolean is24Hrs = DateFormat.is24HourFormat(context);
         SimpleDateFormat dateFormat;
@@ -37,16 +42,16 @@ public class CustomDate {
         Calendar time = Calendar.getInstance();
         String intervalText;
         long interval = notificationTime.getTimeInMillis() - time.getTimeInMillis();
-        if (interval < 60 * 1000) {
-            intervalText = (int) interval / 1000 + "秒";
-        } else if (interval < 60 * 60 * 1000) {
-            intervalText = (int) interval / (60 * 1000) + "分钟";
-        } else if (interval < 24 * 60 * 60 * 1000) {
+        if (interval < MILLIS_IN_MINUTE) {
+            intervalText = (int) interval / MILLIS_IN_SECOND + "秒";
+        } else if (interval < MILLIS_IN_HOUR) {
+            intervalText = (int) interval / (MILLIS_IN_MINUTE) + "分钟";
+        } else if (interval < MILLIS_IN_DAY) {
             intervalText =
-                (int) interval / (60 * 60 * 1000) + "小时" + (int) interval % (60 * 60 * 1000) / (60 * 1000) + "分钟";
+                (int) interval / MILLIS_IN_HOUR + "小时" + (int) interval % MILLIS_IN_HOUR / (MILLIS_IN_MINUTE) + "分钟";
         } else {
             intervalText =
-                (int) interval / (24 * 60 * 60 * 1000) + "天" + (int) interval % (24 * 60 * 60 * 1000) / (60 * 60 * 1000)
+                (int) interval / MILLIS_IN_DAY + "天" + (int) interval % MILLIS_IN_DAY / MILLIS_IN_HOUR
                     + "小时";
         }
         return intervalText;

@@ -37,8 +37,10 @@ public class TodoNotificationService extends Service {
         for (Todo todo : todoList) {
             AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, new Intent(), 0);
-            manager
-                .set(AlarmManager.RTC_WAKEUP, todoList.get(0).getNotificationTime().getTimeInMillis(), pendingIntent);
+            if (todo.getNotificationTime() != null) {
+                manager
+                    .set(AlarmManager.RTC_WAKEUP, todo.getNotificationTime().getTimeInMillis(), pendingIntent);
+            }
         }
         for (int i = 0; i < todoList.size(); i++) {
             Todo todo = todoList.get(i);
