@@ -3,6 +3,9 @@ package xyz.tcreopargh.todolist;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog.Builder;
@@ -203,9 +207,7 @@ public final class MainActivity extends AppCompatActivity
                 }
             });
         todoListAdapter.setOnMajorClickListener(
-            (view, position) -> {
-                showEditTodoDialog(position);
-            });
+            (view, position) -> showEditTodoDialog(position));
         recyclerView.setAdapter(todoListAdapter);
         TodoNotificationService.todoList = todoList;
     }
@@ -322,6 +324,17 @@ public final class MainActivity extends AppCompatActivity
                     todo.setSubItems(finalList);
                     // Todo
                     todoList.add(todo);
+                    if (todo.getNotificationTime() != null) {
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        Intent notificationIntent = new Intent("DISPLAY_NOTIFICATION");
+                        notificationIntent.putExtra("title", todo.getTitle());
+                        notificationIntent.addCategory("android.intent.category.DEFAULT");
+                        PendingIntent broadcast = PendingIntent
+                            .getBroadcast(this, 100, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        alarmManager
+                            .setExact(AlarmManager.RTC_WAKEUP, todo.getNotificationTime().getTimeInMillis(), broadcast);
+                        Toast.makeText(this, "已设置提醒", Toast.LENGTH_LONG).show();
+                    }
                     Collections.sort(todoList, MainActivity::sort);
                     saveTodoList();
                     todoListAdapter.notifyDataSetChanged();
@@ -487,6 +500,7 @@ public final class MainActivity extends AppCompatActivity
                             (view2, hourOfDay, minute, second) -> {
                                 Calendar time = Calendar.getInstance();
                                 time.set(year, monthOfYear, dayOfMonth, hourOfDay, minute);
+                                time.set(Calendar.SECOND, 0);
                                 calendar[0] = time;
                                 switch (requestCode) {
                                     case 0:
