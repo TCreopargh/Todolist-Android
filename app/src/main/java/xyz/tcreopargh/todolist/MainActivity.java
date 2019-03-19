@@ -147,7 +147,7 @@ public final class MainActivity extends AppCompatActivity
             () ->
                 new Thread(
                     () -> {
-                        loadTodoList();
+                        refreshTodoList();
                         swipeRefreshLayout.setRefreshing(false);
                     })
                     .run());
@@ -608,6 +608,22 @@ public final class MainActivity extends AppCompatActivity
     }
 
     private void loadTodoList() {
+        SharedPreferences sharedPreferences = getSharedPreferences("todo_list", MODE_PRIVATE);
+        String listData = sharedPreferences.getString("todo_list", null);
+
+        if (listData != null) {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<Todo>>() {
+            }.getType();
+            todoList = new ArrayList<>();
+            todoList = gson.fromJson(listData, type);
+        }
+        Collections.sort(todoList, MainActivity::sort);
+        todoListAdapter.notifyDataSetChanged();
+    }
+
+    private void refreshTodoList() {
+        todoList = null;
         SharedPreferences sharedPreferences = getSharedPreferences("todo_list", MODE_PRIVATE);
         String listData = sharedPreferences.getString("todo_list", null);
 

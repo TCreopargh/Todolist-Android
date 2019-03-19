@@ -46,6 +46,9 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Todo todo = todoList.get(position);
         holder.todoTitle.setText(todo.getTitle());
+        Calendar now = Calendar.getInstance();
+        Calendar hourLater = Calendar.getInstance();
+        hourLater.add(Calendar.HOUR, 1);
         if (!todo.isImportant()) {
             holder.importance.setVisibility(View.GONE);
         } else {
@@ -65,6 +68,17 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             Calendar notificationTime = todo.getNotificationTime();
             String intervalText = CustomDate.getIntervalString(notificationTime, context);
             holder.alarmTime.setText(intervalText);
+        }
+        if (todo.getDeadline() != null && todo.getDeadline().compareTo(now) < 0) {
+            holder.expiredText.setVisibility(View.VISIBLE);
+            holder.expiredText.setText(context.getString(R.string.expired));
+            holder.expiredText.setTextColor(context.getColor(R.color.colorBlack));
+        } else if (todo.getDeadline() != null && todo.getDeadline().compareTo(hourLater) < 0) {
+            holder.expiredText.setVisibility(View.VISIBLE);
+            holder.expiredText.setText(context.getString(R.string.expiring_soon));
+            holder.expiredText.setTextColor(context.getColor(R.color.colorAccent));
+        } else {
+            holder.expiredText.setVisibility(View.GONE);
         }
         holder.completeBox.setChecked(todo.isCompleted());
         holder.completeBox.setOnCheckedChangeListener((checkBox, isChecked) -> {
@@ -160,6 +174,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
         LinearLayout subItemsLayout;
         TextView todoTitle;
         TextView alarmTime;
+        TextView expiredText;
         View clickableBg;
 
         public ViewHolder(@NonNull View v) {
@@ -172,6 +187,7 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             todoTitle = v.findViewById(R.id.todoTitle);
             alarmTime = v.findViewById(R.id.alarmTime);
             clickableBg = v.findViewById(R.id.clickableBg);
+            expiredText = v.findViewById(R.id.expiredText);
         }
     }
 }

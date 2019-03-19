@@ -31,4 +31,6 @@
   <string name="new_todo">新建待办事项</string>
   <string name="deleted">已删除</string>
   <string name="undo">撤销</string>
+  <string name="expired">已过期</string>
+  <string name="expiring_soon">即将截止</string>
 </resources>
