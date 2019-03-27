@@ -77,9 +77,14 @@ public class TodoListAdapter extends RecyclerView.Adapter<TodoListAdapter.ViewHo
             holder.expiredText.setVisibility(View.VISIBLE);
             holder.expiredText.setText(context.getString(R.string.expiring_soon));
             holder.expiredText.setTextColor(context.getColor(R.color.colorAccent));
+        } else if (todo.getStartTime() != null && todo.getStartTime().compareTo(now) > 0) {
+            holder.expiredText.setVisibility(View.VISIBLE);
+            holder.expiredText.setText(context.getString(R.string.not_started));
+            holder.expiredText.setTextColor(context.getColor(R.color.colorBlack));
         } else {
             holder.expiredText.setVisibility(View.GONE);
         }
+
         holder.completeBox.setChecked(todo.isCompleted());
         holder.completeBox.setOnCheckedChangeListener((checkBox, isChecked) -> {
             todo.setCompleted(isChecked);

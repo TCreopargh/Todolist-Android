@@ -110,14 +110,14 @@ public final class MainActivity extends AppCompatActivity
             return LESS;
         } else if (a.getDeadline() != null
             && b.getDeadline() != null
-            && a.getDeadline().compareTo(hourLater) < 0
-            && b.getDeadline().compareTo(hourLater) >= 0) {
-            return LESS;
+            && a.getDeadline().compareTo(now) < 0
+            && b.getDeadline().compareTo(now) >= 0) {
+            return MORE;
         } else if (a.getDeadline() != null
             && b.getDeadline() != null
-            && a.getDeadline().compareTo(hourLater) >= 0
-            && b.getDeadline().compareTo(hourLater) < 0) {
-            return MORE;
+            && a.getDeadline().compareTo(now) >= 0
+            && b.getDeadline().compareTo(now) < 0) {
+            return LESS;
         } else if (a.isUrgent() && a.isImportant() && !(b.isUrgent() && b.isImportant())) {
             return LESS;
         } else if (b.isUrgent() && b.isImportant() && !(a.isUrgent() && a.isImportant())) {
@@ -337,7 +337,7 @@ public final class MainActivity extends AppCompatActivity
                     }
                     Collections.sort(todoList, MainActivity::sort);
                     saveTodoList();
-                    todoListAdapter.notifyDataSetChanged();
+                    refreshTodoList();
                     dialog.dismiss();
                 })
             .create()
@@ -483,7 +483,7 @@ public final class MainActivity extends AppCompatActivity
                     todoList.set(position, todo);
                     Collections.sort(todoList, MainActivity::sort);
                     saveTodoList();
-                    todoListAdapter.notifyDataSetChanged();
+                    refreshTodoList();
                     dialog.dismiss();
                 })
             .create()
@@ -521,7 +521,7 @@ public final class MainActivity extends AppCompatActivity
                             DateFormat.is24HourFormat(this));
                     if (year == now.get(Calendar.YEAR)
                         && monthOfYear == now.get(Calendar.MONTH)
-                        && dayOfMonth == now.get(Calendar.DAY_OF_MONTH)) {
+                        && dayOfMonth == now.get(Calendar.DAY_OF_MONTH) && requestCode != 1) {
                         dialog1.setMinTime(
                             now.get(Calendar.HOUR_OF_DAY),
                             now.get(Calendar.MINUTE),
@@ -535,7 +535,9 @@ public final class MainActivity extends AppCompatActivity
                 now.get(Calendar.MONTH),
                 // Inital day selection
                 now.get(Calendar.DAY_OF_MONTH));
-        dialog.setMinDate(now);
+        if (requestCode != 1) {
+            dialog.setMinDate(now);
+        }
         dialog.show(getSupportFragmentManager(), "DatePickerDialog");
     }
 
@@ -624,18 +626,7 @@ public final class MainActivity extends AppCompatActivity
 
     private void refreshTodoList() {
         todoList = null;
-        SharedPreferences sharedPreferences = getSharedPreferences("todo_list", MODE_PRIVATE);
-        String listData = sharedPreferences.getString("todo_list", null);
-
-        if (listData != null) {
-            Gson gson = new Gson();
-            Type type = new TypeToken<List<Todo>>() {
-            }.getType();
-            todoList = new ArrayList<>();
-            todoList = gson.fromJson(listData, type);
-        }
-        Collections.sort(todoList, MainActivity::sort);
-        todoListAdapter.notifyDataSetChanged();
+        loadTodoList();
     }
 
     @Override
@@ -644,11 +635,12 @@ public final class MainActivity extends AppCompatActivity
         saveTodoList();
     }
 
+    @SuppressLint("ApplySharedPref")
     private void saveTodoList() {
         SharedPreferences sharedPreferences = getSharedPreferences("todo_list", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = gson.toJson(todoList);
-        sharedPreferences.edit().putString("todo_list", json).apply();
+        sharedPreferences.edit().putString("todo_list", json).commit();
         TodoNotificationService.todoList = todoList;
     }
 }
